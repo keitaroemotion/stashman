@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+
+directory=ARGV[0]
+if directory == "" 
+  abort  "argment (directory path) is empty"
+end
+
+require 'highline/import'
+title=ask("Enter title:")
+
+require 'pathname'
+Dir[directory+"/*"].each do |f|
+  filename = Pathname.new(f).basename 
+  require 'FileUtils'
+  FileUtils.mv("./#{directory}/#{filename}","./#{directory}/#{title}#{filename}") 
+end	

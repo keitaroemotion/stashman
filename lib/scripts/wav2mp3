@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+file=$1
+lame -b 320 -h $file $file.mp3 

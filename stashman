@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+
+require './lib/dropbox/lib/dropbox_sdk.rb'
+
+require './lib/conf_reader.rb'
+
+arr = getAuthKeys(0)
+access_token= arr[0]
+user_id= arr[1]
+client = DropboxClient.new(access_token)
+
+case ARGV[0]
+when "list"
+  root_metadata = client.metadata('/')
+  puts root_metadata.inspect
+when "upload"
+  files = Array.new
+  file_to_upload=ARGV[1] 
+  if((!file_to_upload.end_with? ".wav")  &&  (!file_to_upload.end_with? ".mp3") )
+    Dir[file_to_upload+"/*"].each do |f|
+      files.push f
+    end 
+  else
+      files.push file_to_upload
+  end 
+  
+  puts "linked account:", client.account_info().inspect
+
+  files.each do |f|
+    file = open(f)
+    require 'pathname'
+    response = client.put_file("/#{Pathname.new(file).basename}", file)
+    puts "uploaded:", response.inspect
+  end
+when "download"
+  file_to_download=ARGV[1].strip
+  contents, metadata = client.get_file_and_metadata("/#{file_to_download}")
+  open(file_to_download, 'w') {|f| f.puts contents } 
+else
+  puts
+  puts "the command #{ARGV[0]} does not exist"
+  puts
+  puts "[list] lists your uploaded data"
+  puts "[upload][your file directory] upload the data"
+end

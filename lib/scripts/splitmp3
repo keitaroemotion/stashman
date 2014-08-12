@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+mp3splt -f -t 10.0 -a -d split $1 
